@@ -15,7 +15,7 @@ public class WordCountDriver {
 
         // 1.创建job实例
         Job job = Job.getInstance();
-        job.setJobName("Word Count");
+        job.setJobName("Word Count Test");
         // 2.设置jar
         job.setJarByClass(WordCountDriver.class);
         // 3.设置Mapper和Reducer
@@ -28,8 +28,8 @@ public class WordCountDriver {
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(IntWritable.class);
         // 6.设置输入路径和输出路径
-        FileInputFormat.addInputPath(job, new Path("hdfs://centos1:9000/wordcount/input/wordcountinput.txt"));
-        FileOutputFormat.setOutputPath(job, new Path("hdfs://centos1:9000/wordcount/output"));
+        FileInputFormat.addInputPath(job, new Path("/wordcount/input"));
+        FileOutputFormat.setOutputPath(job, new Path("/wordcount/output"));
         // 7.提交job
         boolean result = job.waitForCompletion(true);
         System.exit(result ? 0 : 1);
