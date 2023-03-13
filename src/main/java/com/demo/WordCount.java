@@ -16,6 +16,7 @@ import java.util.StringTokenizer;
 
 public class WordCount {
     public static void main(String[] args) throws Exception {
+        // 配置
         Configuration conf = new Configuration();
         String[] otherArgs = (new GenericOptionsParser(conf, args)).getRemainingArgs();
         if (otherArgs.length < 2) {
@@ -23,6 +24,7 @@ public class WordCount {
             System.exit(2);
         }
 
+        // 获取作业实例
         Job job = Job.getInstance(conf, "my word count");
         job.setJarByClass(WordCount.class);
         job.setMapperClass(WordCount.TokenizerMapper.class);
@@ -31,14 +33,17 @@ public class WordCount {
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(IntWritable.class);
 
+        // 添加输入路径
         for(int i = 0; i < otherArgs.length - 1; ++i) {
             FileInputFormat.addInputPath(job, new Path(otherArgs[i]));
         }
 
+        // 设置输出路径
         FileOutputFormat.setOutputPath(job, new Path(otherArgs[otherArgs.length - 1]));
         System.exit(job.waitForCompletion(true) ? 0 : 1);
     }
 
+    // Reducer
     public static class IntSumReducer extends Reducer<Text, IntWritable, Text, IntWritable> {
         private IntWritable result = new IntWritable();
 
@@ -58,6 +63,7 @@ public class WordCount {
         }
     }
 
+    // Mapper
     public static class TokenizerMapper extends Mapper<Object, Text, Text, IntWritable> {
         private static final IntWritable one = new IntWritable(1);
         private Text word = new Text();
@@ -66,8 +72,10 @@ public class WordCount {
         }
 
         public void map(Object key, Text value, Mapper<Object, Text, Text, IntWritable>.Context context) throws IOException, InterruptedException {
+            // 解析字符串的分隔对象，Java默认的分隔符是“空格”、“制表符(‘\t’)”、“换行符(‘\n’)”、“回车符(‘\r’)”。
             StringTokenizer itr = new StringTokenizer(value.toString());
 
+            // 返回是否还有分隔符
             while(itr.hasMoreTokens()) {
                 this.word.set(itr.nextToken());
                 context.write(this.word, one);
